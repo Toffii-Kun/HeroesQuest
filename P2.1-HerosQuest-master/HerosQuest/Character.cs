@@ -32,6 +32,7 @@ namespace HerosQuest
                     _EnergyPotions = rng.Next(1, 4);
                     _HealthPotions = rng.Next(1, 4);
                     _MaxNumberOfArrows = rng.Next(4, 9);
+                    _NumberOfArrows = _MaxNumberOfArrows;
                     break;
                 case "mage":
                     _MaxHealth = rng.Next(8, 11);
@@ -45,13 +46,12 @@ namespace HerosQuest
                     _EnergyPotions = rng.Next(2, 4);
                     _HealthPotions = rng.Next(1, 3);
                     _MaxRage = rng.Next(4, 9);
+                    _Rage = 0;
                     break;
             }
-
-            _Rage = 0;
             _Health = _MaxHealth;
             _Energy = _MaxEnergy;
-            _NumberOfArrows = _MaxNumberOfArrows;
+            
         }
 
         public bool TakeEnergyPotion()
@@ -79,6 +79,10 @@ namespace HerosQuest
             // nothing wrong, so do the action, output result and return true
             _Energy--;
             _Energy += _MaxEnergy / 2;
+            if (_Energy > _MaxEnergy)
+            {
+                _Energy = _MaxEnergy;
+            }
             Console.WriteLine("You take an energy potion.");
             Console.WriteLine("Your energy is now " + _Energy);
             return true;
@@ -109,6 +113,10 @@ namespace HerosQuest
             // nothing wrong, so do the action, output result and return true
             _Energy--;
             _Health += _MaxHealth / 2;
+            if (_Health > _MaxHealth)
+            {
+                _Health = _MaxHealth;
+            }
             Console.WriteLine("You take a health potion.");
             Console.WriteLine("Your health is now " + _Health);
             return true;
@@ -120,6 +128,14 @@ namespace HerosQuest
             int health = 3 + rng.Next(4);
             _Energy += (energy);
             _Health += (health);
+            if (_Energy > _MaxEnergy)
+            {
+                _Energy = _MaxEnergy;
+            }            
+            if (_Health > _MaxHealth)
+            {
+                _Health = _MaxHealth;
+            }
 
             Console.WriteLine("You are well rested.");
             Console.WriteLine("Your energy has increased by {0} to {1} / {2}.", energy, _Energy, _MaxEnergy);
@@ -140,6 +156,11 @@ namespace HerosQuest
             if (_NumberOfArrows == 0)
             {
                 error += "You have no arrows to fire!\r\n";
+            }
+
+            if (pTarget._Health <= 0)
+            {
+                error += pTarget._Name + " is already dead.";
             }
 
             if (_Energy < 1)
@@ -172,22 +193,34 @@ namespace HerosQuest
             }
             else if (roll < 7)
             {
-                Console.WriteLine("The arrow grazes " + pTarget._Name + "'s limb dealing 1 damage.");
+                Console.WriteLine("The arrow grazes one of " + pTarget._Name + "'s limbs, dealing 1 damage.");
                 pTarget._Health -= 1;
             }
             else if (roll < 13)
             {
-                Console.WriteLine("The arrow hits " + pTarget._Name + "'s  torso dealing 2 damage!");
+                Console.WriteLine("The arrow hits " + pTarget._Name + "'s  torso, dealing 2 damage!");
                 Console.WriteLine("You regain 1 energy.");
                 pTarget._Health -= 2;
-                _Energy++;
+                if (pTarget._Health < 0)
+                {
+                    pTarget._Health = 0;
+                }
+                _Energy++;                
             }
             else
             {
-                Console.WriteLine("The arrow hits " + pTarget._Name + "'s  head dealing 3 damage!");
+                Console.WriteLine("The arrow hits " + pTarget._Name + "'s  head, dealing 3 damage!");
                 Console.WriteLine("You regain 2 energy.");
                 _Energy += 2;
+                if (_Energy > _MaxEnergy)
+                {
+                    _Energy = _MaxEnergy;
+                }
                 pTarget._Health -= 3;
+                if (pTarget._Health < 0)
+                {
+                    pTarget._Health = 0;
+                }
             }
 
             _Allied = null;
@@ -223,10 +256,14 @@ namespace HerosQuest
             int minimumArrows = Math.Min(2, _MaxNumberOfArrows - _NumberOfArrows);
             int arrowsCollected = rng.Next(minimumArrows, _MaxNumberOfArrows - _NumberOfArrows);
             _NumberOfArrows += arrowsCollected;
+            if (_NumberOfArrows > _MaxNumberOfArrows)
+            {
+                _NumberOfArrows = _MaxNumberOfArrows;
+            }
             Console.WriteLine(_Name + " the ranger picked up " + arrowsCollected + " and now has " + _NumberOfArrows + "/" + _MaxNumberOfArrows);
             return true;
         }
-
+        
         public bool SwingAxe(Character pTarget)
         {
             // should never happen, so throw an exception
@@ -284,6 +321,10 @@ namespace HerosQuest
 
                 Console.WriteLine("The axe grazes " + pTarget._Name + "'s leg dealing " + (damageMultiplier * 2) + " damage!");
                 pTarget._Health -= (damageMultiplier * 2);
+                if (pTarget._Health <= 0)
+                {
+                    pTarget._Health = 0;
+                }
                 _Rage += 3;
             }
             else if (roll < 17)
@@ -291,6 +332,10 @@ namespace HerosQuest
 
                 Console.WriteLine("The axe crashed into " + pTarget._Name + "'s torso dealing " + (damageMultiplier * 3) + " damage.");
                 pTarget._Health -= (damageMultiplier * 3);
+                if (pTarget._Health <= 0)
+                {
+                    pTarget._Health = 0;
+                }
                 _Rage += 2;
             }
             else
@@ -298,6 +343,10 @@ namespace HerosQuest
                 _Rage += 1;
                 Console.WriteLine("The axe smashes into " + pTarget._Name + "'s head dealing " + (damageMultiplier * 4) + " damage.");
                 pTarget._Health -= (damageMultiplier * 4);
+                if (pTarget._Health <= 0)
+                {
+                    pTarget._Health = 0;
+                }
             }
 
             Console.WriteLine("Your rage increases to " + _Rage);
@@ -339,12 +388,13 @@ namespace HerosQuest
 
             // nothing wrong, so do the action, output result and return true
             int roll = rng.Next(1, 21);
-
-            if (roll == 3)
+            _Energy--;
+            if (roll < 3)
             {
                 Console.WriteLine("The fireball misses " + pTarget._Name + " completely!");
+                
             }
-            else if (roll < 7)
+            else if (roll < 8)
             {
                 Console.WriteLine("The fireball grazes " + pTarget._Name + "'s limb dealing 1 damage.");
                 pTarget._Health -= 1;
@@ -352,12 +402,21 @@ namespace HerosQuest
             else if (roll < 17)
             {
                 Console.WriteLine("The fireball hits " + pTarget._Name + "'s  torso dealing 2 damage!");
-                _Energy++;
+                pTarget._Health -= 2;
+                if (pTarget._Health < 0)
+                {
+                    pTarget._Health = 0;
+                }
+
             }
             else
             {
                 Console.WriteLine("The fireball hits " + pTarget._Name + "'s  head dealing 3 damage!");
                 pTarget._Health -= 3;
+                if (pTarget._Health < 0)
+                {
+                    pTarget._Health = 0;
+                }
             }
 
             _Allied = null;

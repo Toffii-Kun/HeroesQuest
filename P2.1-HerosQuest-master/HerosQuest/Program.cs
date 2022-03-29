@@ -9,8 +9,7 @@ namespace HerosQuest
             string playAgain = "yes";
             while (playAgain == "yes") // this loop gives users the opportunity to play again
             {
-                Character ranger, mage, barbarian;
-                SetupCharacters(out ranger, out mage, out barbarian);
+                SetupCharacters(out Character ranger, out Character mage, out Character barbarian);
 
                 Character winner = null;
                 while (winner == null)
@@ -23,7 +22,9 @@ namespace HerosQuest
                      */
                     if (ranger._Health > 0)
                     {
+                        
                         TakeRangerTurn(ranger, mage, barbarian);
+                        Console.WriteLine("");
                         if (mage._Health <= 0 && barbarian._Health <= 0)
                         {
                             winner = ranger;
@@ -33,7 +34,9 @@ namespace HerosQuest
 
                     if (mage._Health > 0)
                     {
+                        
                         TakeMageTurn(ranger, mage, barbarian);
+                        Console.WriteLine("");
                         if (ranger._Health <= 0 && barbarian._Health <= 0)
                         {
                             winner = mage;
@@ -43,7 +46,9 @@ namespace HerosQuest
 
                     if (barbarian._Health > 0)
                     {
+                        
                         TakeBarbarianTurn(ranger, mage, barbarian);
+                        Console.WriteLine("");
                         if (ranger._Health <= 0 && mage._Health <= 0)
                         {
                             winner = barbarian;
