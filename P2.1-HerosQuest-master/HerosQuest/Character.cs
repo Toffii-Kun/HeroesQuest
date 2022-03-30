@@ -2,8 +2,18 @@
 
 namespace HerosQuest
 {
+    
     public class Character
     {
+        public int IncreaseLimiter(int newAmount, int maxAmount)
+        {
+            if (newAmount > maxAmount)
+            {
+                newAmount = maxAmount;                
+            }
+            return newAmount;
+        }
+    
         static Random rng = new Random();
 
         public string _Name;
@@ -79,10 +89,7 @@ namespace HerosQuest
             // nothing wrong, so do the action, output result and return true
             _Energy--;
             _Energy += _MaxEnergy / 2;
-            if (_Energy > _MaxEnergy)
-            {
-                _Energy = _MaxEnergy;
-            }
+            _Energy = IncreaseLimiter(_Energy, _MaxEnergy);
             Console.WriteLine("You take an energy potion.");
             Console.WriteLine("Your energy is now " + _Energy);
             return true;
@@ -113,10 +120,7 @@ namespace HerosQuest
             // nothing wrong, so do the action, output result and return true
             _Energy--;
             _Health += _MaxHealth / 2;
-            if (_Health > _MaxHealth)
-            {
-                _Health = _MaxHealth;
-            }
+            _Health = IncreaseLimiter(_Health, _MaxHealth);
             Console.WriteLine("You take a health potion.");
             Console.WriteLine("Your health is now " + _Health);
             return true;
@@ -128,14 +132,9 @@ namespace HerosQuest
             int health = 3 + rng.Next(4);
             _Energy += (energy);
             _Health += (health);
-            if (_Energy > _MaxEnergy)
-            {
-                _Energy = _MaxEnergy;
-            }            
-            if (_Health > _MaxHealth)
-            {
-                _Health = _MaxHealth;
-            }
+            _Energy = IncreaseLimiter(_Energy, _MaxEnergy);
+            _Health = IncreaseLimiter(_Health, _MaxHealth);
+
 
             Console.WriteLine("You are well rested.");
             Console.WriteLine("Your energy has increased by {0} to {1} / {2}.", energy, _Energy, _MaxEnergy);
@@ -211,11 +210,9 @@ namespace HerosQuest
             {
                 Console.WriteLine("The arrow hits " + pTarget._Name + "'s  head, dealing 3 damage!");
                 Console.WriteLine("You regain 2 energy.");
-                _Energy += 2;
-                if (_Energy > _MaxEnergy)
-                {
-                    _Energy = _MaxEnergy;
-                }
+                _Energy += 2;             
+                _Energy = IncreaseLimiter(_Energy, _MaxEnergy);
+
                 pTarget._Health -= 3;
                 if (pTarget._Health < 0)
                 {
@@ -255,11 +252,9 @@ namespace HerosQuest
 
             int minimumArrows = Math.Min(2, _MaxNumberOfArrows - _NumberOfArrows);
             int arrowsCollected = rng.Next(minimumArrows, _MaxNumberOfArrows - _NumberOfArrows);
-            _NumberOfArrows += arrowsCollected;
-            if (_NumberOfArrows > _MaxNumberOfArrows)
-            {
-                _NumberOfArrows = _MaxNumberOfArrows;
-            }
+            _NumberOfArrows += arrowsCollected;            
+            _NumberOfArrows = IncreaseLimiter(_NumberOfArrows, _MaxNumberOfArrows);
+
             Console.WriteLine(_Name + " the ranger picked up " + arrowsCollected + " and now has " + _NumberOfArrows + "/" + _MaxNumberOfArrows);
             return true;
         }
@@ -453,6 +448,8 @@ namespace HerosQuest
 
             // nothing wrong, so do the action, output result and return true
             pTarget._Health += rng.Next(3, 7);
+            pTarget._Health = IncreaseLimiter(pTarget._Health, pTarget._MaxHealth);
+
             if (pTarget != this)
             {
                 pTarget._Allied = this;
