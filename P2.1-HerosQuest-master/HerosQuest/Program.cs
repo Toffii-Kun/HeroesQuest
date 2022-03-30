@@ -6,7 +6,7 @@ namespace HerosQuest
     {
         static void Main(string[] args)
         {
-            string playAgain = "yes";
+            string playAgain = "yes"; 
             while (playAgain == "yes") // this loop gives users the opportunity to play again
             {
                 SetupCharacters(out Character ranger, out Character mage, out Character barbarian);
